@@ -411,9 +411,10 @@ func (u *UserHandler) Bmi(c *echo.Context) error {
 
 	cmHeight := userBmi.Height / 100
 	calculatBmi := userBmi.Weight / math.Pow(float64(cmHeight), 2)
+	roundedBMI := math.Round(calculatBmi*100) / 100
 
 	return c.JSON(http.StatusOK, map[string]float64{
-		"user bmi": calculatBmi,
+		"user bmi": roundedBMI,
 	})
 
 }
