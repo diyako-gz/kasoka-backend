@@ -27,6 +27,8 @@ func FoodsRout(r *echo.Group) {
 	r.GET("/food/:id", GetFoodsHandler.GetFoodById)
 	// food by type
 	r.GET("/foodtype", GetFoodsHandler.FoodByType)
+	// food by rate
+	r.GET("/food-rate", GetFoodsHandler.FoodWithRate)
 
 
 }
