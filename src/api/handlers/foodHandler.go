@@ -38,6 +38,10 @@ type foodType struct {
 	Type string `json:"type" form:"type"`
 }
 
+type FoodRate struct {
+	Rate float64  `json:"rate" form:"rate"`
+}
+
 // get all foods
 
 func (f *FoodHandler) GetAllFoods(c *echo.Context) error {
@@ -97,6 +101,40 @@ func (f *FoodHandler) GetFoodById(c *echo.Context) error {
 		"message": "food found",
 		"res":     foundedFood,
 	})
+
+}
+
+// food with rates
+
+func (f *FoodHandler) FoodWithRate(c *echo.Context) error {
+	var rate FoodRate
+	ctx := c.Request().Context()
+	if err := c.Bind(&rate); err != nil {
+		logger.Error("Bind error occurred", slog.Any("error", err))
+		return c.JSON(http.StatusBadRequest, map[string]any{"error": "Invalid request body"})
+	}
+
+	var foundedRate []bson.M
+
+	filter := bson.M{
+		"rate": bson.M{"$gt": rate.Rate},
+	}
+
+	cursor, err := f.FoodCol.Find(ctx, filter)
+	if err != nil {
+		c.JSON(401, "food rate not found")
+	}
+	defer cursor.Close(ctx)
+
+	err = cursor.All(ctx, &foundedRate)
+	if err != nil {
+		c.JSON(401, "cannot do it right now")
+	}
+
+	if len(foundedRate) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]any{"message": "No foods found with rate higher than given"})
+	}
+	return c.JSON(http.StatusOK, foundedRate)
 
 }
 

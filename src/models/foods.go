@@ -8,4 +8,5 @@ type Foods struct {
 	Price  string             `json:"price" form:"price"`
 	Recipe string             `json:"recipe" form:"recipe"`
 	Type   string             `json:"type" form:"type"`
+	Rate   float64            `json:"rate" form:"rate"`
 }
