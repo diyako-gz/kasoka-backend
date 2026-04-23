@@ -9,6 +9,7 @@ import (
 	"kasoka/src/db"
 	"kasoka/src/models"
 	"log/slog"
+	"math"
 	"net/http"
 	"time"
 
@@ -60,6 +61,11 @@ type UpdatePass struct {
 
 type UpdateUserName struct {
 	UserName string `json:"username" form:"username"`
+}
+
+type Bmi struct {
+	Weight float64 `json:"weight" form:"weight"`
+	Height float64 `json:"height" form:"height"`
 }
 
 func NewUserHandler(UserCol *mongo.Collection, UserRole *mongo.Collection) *UserHandler {
@@ -388,5 +394,26 @@ func (u *UserHandler) GetAllUsers(c *echo.Context) error {
 
 	c.JSON(200, users)
 	return nil
+
+}
+
+// calculate user bmi
+
+func (u *UserHandler) Bmi(c *echo.Context) error {
+	var userBmi Bmi
+	if err := c.Bind(&userBmi); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	if userBmi.Weight == 0 || userBmi.Height == 0 {
+		return c.JSON(http.StatusBadRequest, "height or weight cannot be zero! please enter your height and weight")
+	}
+
+	cmHeight := userBmi.Height / 100
+	calculatBmi := userBmi.Weight / math.Pow(float64(cmHeight), 2)
+
+	return c.JSON(http.StatusOK, map[string]float64{
+		"user bmi": calculatBmi,
+	})
 
 }

@@ -24,7 +24,7 @@ func UserRoutes(r *echo.Group) {
 
 	// sign up
 	r.POST("/sign-up", GetUserHandler.SignUp)
-	
+
 	// log in with password
 	r.GET("/log-in", GetUserHandler.LogIn)
 	// log in with otp
@@ -35,5 +35,7 @@ func UserRoutes(r *echo.Group) {
 	r.PUT("/pass/:_id", GetUserHandler.UpdateUserPass)
 	r.PUT("/username/:_id", GetUserHandler.UpdateUserUserName)
 
+	// calculate bmi
+	r.GET("/bmi", GetUserHandler.Bmi)
 
 }
