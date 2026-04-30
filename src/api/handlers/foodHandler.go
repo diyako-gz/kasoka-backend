@@ -26,21 +26,6 @@ func NewFoodHandler(foodCol *mongo.Collection) *FoodHandler {
 	}
 }
 
-type food struct {
-	models.Foods
-}
-
-type foodId struct {
-	ID string `json:"_id,omitempty" bson:"_id,omitempty"`
-}
-
-type foodType struct {
-	Type string `json:"type" form:"type"`
-}
-
-type FoodRate struct {
-	Rate float64  `json:"rate" form:"rate"`
-}
 
 // get all foods
 
@@ -66,7 +51,7 @@ func (f *FoodHandler) GetAllFoods(c *echo.Context) error {
 // food by id
 
 func (f *FoodHandler) GetFoodById(c *echo.Context) error {
-	var FoodId foodId
+	var FoodId models.FoodId
 	ctx := c.Request().Context()
 	idStr := c.Param("id")
 	id, err := primitive.ObjectIDFromHex(idStr)
@@ -107,7 +92,7 @@ func (f *FoodHandler) GetFoodById(c *echo.Context) error {
 // food with rates
 
 func (f *FoodHandler) FoodWithRate(c *echo.Context) error {
-	var rate FoodRate
+	var rate models.FoodRate
 	ctx := c.Request().Context()
 	if err := c.Bind(&rate); err != nil {
 		logger.Error("Bind error occurred", slog.Any("error", err))
@@ -141,7 +126,7 @@ func (f *FoodHandler) FoodWithRate(c *echo.Context) error {
 // found food by type
 
 func (f *FoodHandler) FoodByType(c *echo.Context) error {
-	var foodType foodType
+	var foodType models.FoodType
 	ctx := c.Request().Context()
 
 	if err := c.Bind(&foodType); err != nil {

@@ -10,3 +10,15 @@ type Foods struct {
 	Type   string             `json:"type" form:"type"`
 	Rate   float64            `json:"rate" form:"rate"`
 }
+
+type FoodId struct {
+	ID string `json:"_id,omitempty" bson:"_id,omitempty"`
+}
+
+type FoodType struct {
+	Type string `json:"type" form:"type"`
+}
+
+type FoodRate struct {
+	Rate float64  `json:"rate" form:"rate"`
+}

@@ -26,48 +26,6 @@ type UserHandler struct {
 	UserRole *mongo.Collection
 }
 
-type CreateUserHeader struct {
-	Phone    string `json:"phone" form:"phone" binding:"required"`
-	Password string `json:"password" form:"password" binding:"required"`
-	Username string `json:"username" form:"username"`
-	Name     string `json:"name" form:"name"`
-	LastName string `json:"lastname" form:"lastname"`
-}
-
-type UserResponse struct {
-	ID       string `json:"id"`
-	Password string `json:"password"`
-	Phone    string `json:"phone"`
-	UserName string `json:"username"`
-	Name     string `json:"name"`
-	LastName string `json:"lastname"`
-	Role     string `json:"role"`
-	IsActive bool   `json:"is_active"`
-}
-
-type LogInWhitPass struct {
-	UserName string             `json:"username" form:"username"`
-	Password string             `json:"password" form:"password"`
-	ID       primitive.ObjectID `json:"id" form:"id"`
-}
-
-type LogInWhitId struct {
-	ID primitive.ObjectID `json:"id" form:"id"`
-}
-
-type UpdatePass struct {
-	Password string `json:"password" form:"password"`
-}
-
-type UpdateUserName struct {
-	UserName string `json:"username" form:"username"`
-}
-
-type Bmi struct {
-	Weight float64 `json:"weight" form:"weight"`
-	Height float64 `json:"height" form:"height"`
-}
-
 func NewUserHandler(UserCol *mongo.Collection, UserRole *mongo.Collection) *UserHandler {
 	return &UserHandler{
 		UserCol:  UserCol,
@@ -78,7 +36,7 @@ func NewUserHandler(UserCol *mongo.Collection, UserRole *mongo.Collection) *User
 // sign up
 
 func (u *UserHandler) SignUp(c *echo.Context) error {
-	user := CreateUserHeader{}
+	user := models.CreateUserHeader{}
 	newUser := models.User{}
 	ctx := c.Request().Context()
 	if err := c.Bind(&user); err != nil {
@@ -100,7 +58,7 @@ func (u *UserHandler) SignUp(c *echo.Context) error {
 		IsActive:  true,
 		CreatedAt: time.Now(),
 	}
-	res := UserResponse{
+	res := models.UserResponse{
 		ID:       newUser.ID.Hex(),
 		Name:     newUser.Name,
 		LastName: newUser.LastName,
@@ -128,7 +86,7 @@ func (u *UserHandler) SignUp(c *echo.Context) error {
 // log in white pass
 
 func (u *UserHandler) LogIn(c *echo.Context) error {
-	var UserPassAndUsername LogInWhitPass
+	var UserPassAndUsername models.LogInWhitPass
 	ctx := c.Request().Context()
 	if err := c.Bind(&UserPassAndUsername); err != nil {
 		logger.Error("Bind error occurred", slog.Any("error", err))
@@ -188,7 +146,7 @@ func (u *UserHandler) GetOtp(c *echo.Context) error {
 }
 
 func (u *UserHandler) LogInWPhone(c *echo.Context) error {
-	var UserToken LogInWhitPass
+	var UserToken models.LogInWhitPass
 
 	if common.OtpVerify(c) == true {
 		ctx := c.Request().Context()
@@ -226,7 +184,7 @@ func (u *UserHandler) LogInWPhone(c *echo.Context) error {
 // log in with id
 
 func (u *UserHandler) LogById(c *echo.Context) error {
-	var userId LogInWhitId
+	var userId models.LogInWhitId
 	ctx := c.Request().Context()
 
 	if err := c.Bind(&userId); err != nil {
@@ -262,8 +220,9 @@ func (u *UserHandler) LogById(c *echo.Context) error {
 // update user pass
 
 func (u *UserHandler) UpdateUserPass(c *echo.Context) error {
-	var user UpdatePass
-	// ctx := c.Request().Context()
+	var user models.UpdatePass
+	
+
 	idHex, err := primitive.ObjectIDFromHex(c.Param("_id"))
 	id := primitive.ObjectID(idHex)
 	if err != nil {
@@ -311,8 +270,9 @@ func (u *UserHandler) UpdateUserPass(c *echo.Context) error {
 // update user username
 
 func (u *UserHandler) UpdateUserUserName(c *echo.Context) error {
-	var user UpdateUserName
-	// ctx := c.Request().Context()
+	var user models.UpdateUserName
+	
+
 	idHex, err := primitive.ObjectIDFromHex(c.Param("_id"))
 	id := primitive.ObjectID(idHex)
 	if err != nil {
@@ -400,7 +360,7 @@ func (u *UserHandler) GetAllUsers(c *echo.Context) error {
 // calculate user bmi
 
 func (u *UserHandler) Bmi(c *echo.Context) error {
-	var userBmi Bmi
+	var userBmi models.Bmi
 	if err := c.Bind(&userBmi); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
