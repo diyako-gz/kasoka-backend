@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -27,14 +28,16 @@ var RefreshTokenSecret []byte
 func InitJWTSecrets() error {
 	accessSecret := os.Getenv("ACCESS_TOKEN_SECRET")
 	if accessSecret == "" {
-		accessSecret = "super-secretKey"
+		// accessSecret = "super-secretKey"
 		fmt.Println("Warning: ACCESS_TOKEN_SECRET not set, using default.")
+		return errors.New("ACCESS_TOKEN_SECRET is required")
 	}
 
 	refreshSecret := os.Getenv("REFRESH_TOKEN_SECRET")
 	if refreshSecret == "" {
-		refreshSecret = "super-secretKey"
+		// refreshSecret = "super-secretKey"
 		fmt.Println("Warning: REFRESH_TOKEN_SECRET not set, using default.")
+		return errors.New("REFRESH_TOKEN_SECRET is required")
 	}
 
 	AccessTokenSecret = []byte(accessSecret)
@@ -70,6 +73,9 @@ func ValidateToken(tokenStr string) (*Claims, error) {
 		tokenStr,
 		&Claims{},
 		func(t *jwt.Token) (any, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method")
+			}
 			return AccessTokenSecret, nil
 		},
 	)
@@ -79,7 +85,7 @@ func ValidateToken(tokenStr string) (*Claims, error) {
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return nil, err
+		return nil, errors.New("invalid token")
 	}
 
 	return claims, nil
@@ -103,4 +109,24 @@ func GenerateRefreshToken(userID primitive.ObjectID) (string, error) {
 	}
 
 	return tokenStr, nil
+}
+
+func ValidateRefreshToken(tokenStr string) (*RefreshClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &RefreshClaims{}, func(t *jwt.Token) (any, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return AccessTokenSecret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claim, ok := token.Claims.(*RefreshClaims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claim, nil
+
 }

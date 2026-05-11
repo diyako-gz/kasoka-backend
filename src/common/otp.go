@@ -2,6 +2,7 @@ package common
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"kasoka/src/db"
 	"log/slog"
@@ -27,7 +28,8 @@ func OtpGenerator() (string, string) {
 	otp := rand.Intn(900000) + 100000
 	otpStr := fmt.Sprintf("%d", otp)
 	hashOtp := sha256.Sum256([]byte(otpStr))
-	hashedStr := fmt.Sprintf("%x", hashOtp)
+	// hashedStr := fmt.Sprintf("%x", hashOtp)
+	hashedStr := hex.EncodeToString(hashOtp[:])
 
 	return otpStr, hashedStr
 }
@@ -45,10 +47,6 @@ func SendOtp(c *echo.Context) bool {
 	if err != nil {
 		c.String(500, "redis error")
 	}
-
-	// token 
-	
-
 
 	c.JSON(200, "otp code send")
 	fmt.Println(otp)
