@@ -9,7 +9,7 @@ import (
 type User struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name      string             `json:"name" bson:"name"`
-	LastName  string             `json:"lastname" bson:"lastname"`
+	Email     string             `json:"email" bson:"email"`
 	Username  string             `json:"username" bson:"username"`
 	Password  string             `json:"password" bson:"password"`
 	Phone     string             `json:"phone" bson:"phone"`
@@ -24,14 +24,12 @@ const (
 	RoleUser  = "user"
 )
 
-
-
 type CreateUserHeader struct {
 	Phone    string `json:"phone" form:"phone" binding:"required"`
 	Password string `json:"password" form:"password" binding:"required"`
 	Username string `json:"username" form:"username"`
 	Name     string `json:"name" form:"name"`
-	LastName string `json:"lastname" form:"lastname"`
+	Email    string `json:"email" form:"email"`
 }
 
 type UserResponse struct {
@@ -40,7 +38,7 @@ type UserResponse struct {
 	Phone    string `json:"phone"`
 	UserName string `json:"username"`
 	Name     string `json:"name"`
-	LastName string `json:"lastname"`
+	Email    string `json:"email"`
 	Role     string `json:"role"`
 	IsActive bool   `json:"is_active"`
 }

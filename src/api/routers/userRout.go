@@ -26,7 +26,7 @@ func UserRoutes(r *echo.Group) {
 	r.POST("/sign-up", GetUserHandler.SignUp)
 
 	// log in with password
-	r.GET("/log-in", GetUserHandler.LogIn)
+	r.POST("/log-in", GetUserHandler.LogIn)
 	// log in with otp
 	r.POST("/get-otp", GetUserHandler.GetOtp)
 	r.POST("/log-in-with-otp", GetUserHandler.LogInWPhone)

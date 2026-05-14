@@ -50,7 +50,7 @@ func (u *UserHandler) SignUp(c *echo.Context) error {
 	newUser = models.User{
 		ID:        primitive.NewObjectID(),
 		Name:      user.Name,
-		LastName:  user.LastName,
+		Email:  user.Email,
 		Username:  user.Username,
 		Password:  hashToStr,
 		Phone:     user.Phone,
@@ -61,7 +61,7 @@ func (u *UserHandler) SignUp(c *echo.Context) error {
 	res := models.UserResponse{
 		ID:       newUser.ID.Hex(),
 		Name:     newUser.Name,
-		LastName: newUser.LastName,
+		Email: newUser.Email,
 		UserName: newUser.Username,
 		Phone:    newUser.Phone,
 		Role:     newUser.Role,
